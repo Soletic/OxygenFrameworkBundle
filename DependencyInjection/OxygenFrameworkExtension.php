@@ -4,7 +4,6 @@ namespace Oxygen\FrameworkBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
 /**
@@ -12,7 +11,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class OxygenFrameworkExtension extends Extension
+class OxygenFrameworkExtension extends OxygenExtension
 {
     /**
      * {@inheritDoc}
@@ -21,8 +20,11 @@ class OxygenFrameworkExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+        
+        $this->mapsParameter($container, 'oxygen_framework', $config);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.xml');
+        $loader->load('services/templating.xml');
+        
     }
 }
