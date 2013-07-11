@@ -31,10 +31,6 @@ Puis vous créez une class Person dans le dossier Entity :
    
    class Person extend  Oxygen\ContactBundle\Model\PersonModel {}
 
-Vous ne devez pas dans votre bundle créer le fichier directement dans config/doctrine car vous empêcherez toutes possibilités
-de surcharger l'entité ! Le bundle souhaitant utiliser les fonctionnalités de OxygenContact, effectuera une copie de ce fichier
-dans le dossier config/doctrine dans un autre bundle.
-
 Enfin, pensez à créer la classe Repository associée à l'entité Person
 
 .. code-block:: php
@@ -46,10 +42,28 @@ Enfin, pensez à créer la classe Repository associée à l'entité Person
 
    class PersonRepository extends EntityRepository {}
    
-Déclarer l'entité à persister
------------------------------
+Déclarer l'entité comment étant à persister
+-------------------------------------------
 
-Vous devez ajouter à la configuration de votre bundle la possibilité de configurer l'entité en 
+Vous devez ajouter à la configuration de votre bundle la possibilité de configurer l'entité, c'est à dire permettre dans le fichier 
+config.yml de changer la classe représentant l'entité et le repository : 
+
+.. code-block:: yaml
+
+   oxygen_contact
+      entities:
+         person:
+            class: ...
+            repository: ...
+
+Pour faire ceci facilement, deux étapes sont à suivre :
+
+* Ajouter à l'arbre de configuration du bundle la possibilité de changer les classes de base de l'entité
+* Lire l'arbre de configuration quand le bundle est chargé.
+
+Arbre de configuration
+++++++++++++++++++++++
+
 * faisant hériter la classe DependencyInjection/Configuration par la classe OxygenConfiguration disponible dans le framework
 * ajoutant un appel à addEntityConfiguration()
 
@@ -68,8 +82,12 @@ Vous devez ajouter à la configuration de votre bundle la possibilité de config
            ...
        }
    }
-   
+
+Lecture de l'arbre de configuration
++++++++++++++++++++++++++++++++++++
+
 Puis modifiez la classe DependencyInjection/OxygenContactBundle en :
+
 * faisant hériter de OxygenExtension
 * ajoutant un appel à mapEntitiesParamter()
 
@@ -93,6 +111,7 @@ Persister et étendre l'entité
 -----------------------------
 
 L'entité se persiste dans un autre bundle, par exemple YouOneBundle, en 
+
 * créant une classe dans le dossier Entity 
 * héritant de l'entité de base
 
@@ -149,6 +168,7 @@ Pour cela nous utilisons le service oxygen_framework.entities permettant d'accé
       $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')
 
 *oxygen_contact.person* est un alias créé automatiquement par le framework et se compose deux parties :
+
 * oxygen_contact : le nom racine de la configuration du bundle
 * person : le nom de l'entité en minuscule
 
@@ -182,6 +202,7 @@ vous conseillons de créer son squelette dans le dossier config/entities de votr
    </doctrine-mapping>
    
 Les attributs du tag <entity> sont codifiés :
+
 * name : nommage similaire au à l'arbre de configuration de l'entité
 * repository : nommage similaire au à l'arbre de configuration de l'entité
 * table : %table%
