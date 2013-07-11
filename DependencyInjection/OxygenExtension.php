@@ -28,4 +28,13 @@ abstract class OxygenExtension extends Extension
     		}
     	}
     }
+    
+    public function mapsEntitiesParameter(ContainerBuilder $container, $rootNodeName, $config) {
+    	foreach($config as $name => $value) {
+    		if ($name == 'entities') {
+    			$this->mapsParameter($container, $rootNodeName . '.' . $name, $value);
+    		}
+    	}
+    }
+    
 }
