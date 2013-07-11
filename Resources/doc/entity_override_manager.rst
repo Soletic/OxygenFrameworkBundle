@@ -50,6 +50,7 @@ Déclarer l'entité à persister
 -----------------------------
 
 Vous devez ajouter à la configuration de votre bundle la possibilité de configurer l'entité en 
+
 * faisant hériter la classe DependencyInjection/Configuration par la classe OxygenConfiguration disponible dans le framework
 * ajoutant un appel à addEntityConfiguration()
 
@@ -70,6 +71,7 @@ Vous devez ajouter à la configuration de votre bundle la possibilité de config
    }
    
 Puis modifiez la classe DependencyInjection/OxygenContactBundle en :
+
 * faisant hériter de OxygenExtension
 * ajoutant un appel à mapEntitiesParamter()
 
@@ -93,6 +95,7 @@ Persister et étendre l'entité
 -----------------------------
 
 L'entité se persiste dans un autre bundle, par exemple YouOneBundle, en 
+
 * créant une classe dans le dossier Entity 
 * héritant de l'entité de base
 
@@ -182,6 +185,7 @@ vous conseillons de créer son squelette dans le dossier config/entities de votr
    </doctrine-mapping>
    
 Les attributs du tag <entity> sont codifiés :
+
 * name : nommage similaire au à l'arbre de configuration de l'entité
 * repository : nommage similaire au à l'arbre de configuration de l'entité
 * table : %table%
