@@ -64,6 +64,8 @@ Pour faire ceci facilement, deux étapes sont à suivre :
 Arbre de configuration
 ++++++++++++++++++++++
 
+Modifier la classe Configuration du bundle en :
+
 * faisant hériter la classe DependencyInjection/Configuration par la classe OxygenConfiguration disponible dans le framework
 * ajoutant un appel à addEntityConfiguration()
 
@@ -89,7 +91,7 @@ Lecture de l'arbre de configuration
 Puis modifiez la classe DependencyInjection/OxygenContactBundle en :
 
 * faisant hériter de OxygenExtension
-* ajoutant un appel à mapEntitiesParamter()
+* ajoutant un appel à mapEntitiesParameter()
 
 .. code-block:: php
 
@@ -203,10 +205,10 @@ vous conseillons de créer son squelette dans le dossier config/entities de votr
    
 Les attributs du tag <entity> sont codifiés :
 
-* name : nommage similaire au à l'arbre de configuration de l'entité
-* repository : nommage similaire au à l'arbre de configuration de l'entité
+* name : nommage similaire à l'arbre de configuration de l'entité
+* repository : nommage similaire à l'arbre de configuration de l'entité
 * table : %table%
 
-En responsant cette pratique de nommage, votre bundle bénificiera du futur installateur automatisant 
+En respectant cette pratique de nommage, votre bundle bénificiera du futur installateur automatisant 
 la persistence des entités surchargeables
 

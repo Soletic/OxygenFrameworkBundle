@@ -36,7 +36,13 @@ class EntitiesServer {
 		$this->entityManager = $entityManager;
 		$this->container = $container;
 	}
-	
+	/**
+	 * Return manager of an entity register has extensible
+	 * 
+	 * @param string $entity_path
+	 * @throws \Exception entity_path bad-formed
+	 * @throws \Exception Parameter class or repository for entity not defined in configuration
+	 */
 	public function getManager($entity_path) {
 		if (empty($this->entitiesManager[$entity_path])) {
 			$entity_parts = explode('.', $entity_path);
@@ -57,5 +63,23 @@ class EntitiesServer {
 		}
 		return $this->entitiesManager[$entity_path];
 	}
-	
+	/**
+	 * Return true if manager exist for $entity_path
+	 * 
+	 * @param string $entity_path
+	 * @return bool
+	 */
+	public function has($entity_path) {
+		$entity_parts = explode('.', $entity_path);
+		if (count($entity_parts) != 2) {
+			return false;
+		}
+		if (!$this->container->hasParameter($entity_parts[0] . '.entities.'.$entity_parts[1].'.class')) {
+			return false;
+		}
+		if (!$this->container->hasParameter($entity_parts[0] . '.entities.'.$entity_parts[1].'.repository')) {
+			return false;
+		}
+		return true;
+	}
 }

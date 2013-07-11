@@ -56,8 +56,6 @@ class LayoutTwigExtension extends \Twig_Extension {
 		$request = $this->container->get('request');
 		if (!is_null($name) && $this->container->hasParameter('oxygen_framework.templating.layouts.'.$name)) {
 			return $this->container->getParameter('oxygen_framework.templating.layouts.'.$name);
-		} elseif (!is_null($name)) {
-			throw new \Exception(sprintf('layout %s undefined in oxygen_framework configuration', $name));
 		}
 		if ($request->isXmlHttpRequest() && $this->container->hasParameter('oxygen_framework.templating.layouts.light')) {
 			return $this->container->getParameter('oxygen_framework.templating.layouts.light');

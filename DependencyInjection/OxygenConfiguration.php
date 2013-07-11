@@ -15,12 +15,14 @@ abstract class OxygenConfiguration
 
     public function addEntityConfiguration($rootNode, $entity_class, $repository_class)
     {
-       $rootNode
+    	$entity_name = explode("\\", $entity_class);
+    	$entity_name = strtolower(array_pop($entity_name));
+        $rootNode
         	->children()
 	        	->arrayNode('entities')
 	        		->addDefaultsIfNotSet()
 	        		->children()
-	        			->arrayNode('pass')
+	        			->arrayNode($entity_name)
 	        				->addDefaultsIfNotSet()
 	        				->children()
 	        					->scalarNode('class')->defaultValue($entity_class)->end()
