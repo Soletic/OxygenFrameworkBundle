@@ -5,10 +5,15 @@
 
 	<parameters>
 		<parameter key="oxygen_framework.templating.layout_class">Oxygen\FrameworkBundle\Templating\LayoutTwigExtension</parameter>
+		<parameter key="oxygen_framework.templating.messages_class">Oxygen\FrameworkBundle\Templating\FlashMessagesTwigExtension</parameter>
     </parameters>
 
 	<services>
 	
+		<service id="oxygen_framework.templating.messages" class="%oxygen_framework.templating.messages_class%">
+        	<argument type="service" id="session" />
+        	<tag name="twig.extension" />
+        </service>
         <service id="oxygen_framework.templating.layout_extension" class="%oxygen_framework.templating.layout_class%">
         	<argument type="service" id="service_container" />
         	<tag name="twig.extension" />
