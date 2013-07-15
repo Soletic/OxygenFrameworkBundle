@@ -42,6 +42,7 @@ class EntitiesServer {
 	 * @param string $entity_path
 	 * @throws \Exception entity_path bad-formed
 	 * @throws \Exception Parameter class or repository for entity not defined in configuration
+	 * @return EntityManager
 	 */
 	public function getManager($entity_path) {
 		if (empty($this->entitiesManager[$entity_path])) {
