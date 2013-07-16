@@ -26,6 +26,7 @@ class OxygenFrameworkExtension extends OxygenExtension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services/templating.xml');
         $loader->load('services/model.xml');
+        $loader->load('services/form.xml');
         
     }
 }
