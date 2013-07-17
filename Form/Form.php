@@ -1,6 +1,8 @@
 <?php
 namespace Oxygen\FrameworkBundle\Form;
 
+use Doctrine\Common\Collections\Collection;
+
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\Form\FormView;
@@ -116,4 +118,30 @@ abstract class Form implements FormInterface {
 		return false;
 	}
 	
+	protected function updateCollection(array $elements, Collection $collection) {
+		// Removed
+		foreach($collection as $entity) {
+			$removed = true;
+			foreach($elements as $model) {
+				if ($model === $entity) {
+					$removed = false;
+					break;
+				}
+			}
+			if ($removed)
+				$collection->removeElement($entity);
+		}
+		// Added
+		foreach($elements as $model) {
+			$added = true;
+			foreach($collection as $entity) {
+				if ($model === $entity) {
+					$added = false;
+					break;
+				}
+			}
+			if ($added)
+				$collection->add($entity);
+		}
+	}
 }
