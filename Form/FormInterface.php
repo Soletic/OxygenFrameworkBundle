@@ -21,11 +21,13 @@ interface FormInterface {
 	public function getType();
 	
 	/**
-	 * Return the model of the Form
+	 * Return data for the form
+	 * 
+	 * If form for an entity and using embedded FormModel, return the entity (and not the model)
 	 * 
 	 * @return FormModelInterface
 	 */
-	public function getModel();
+	public function getData();
 	/**
 	 * Return true if form submitted
 	 * 

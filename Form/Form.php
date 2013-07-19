@@ -78,26 +78,20 @@ abstract class Form implements FormInterface {
 	 * (non-PHPdoc)
 	 * @see Oxygen\FrameworkBundle\Form.FormInterface::getModel()
 	 */
-	public function getModel() {
-		if (is_null($this->model)) {
-			$dataClass = $this->getDataClass();
-			$this->model = new $dataClass();
-		}
-		return $this->model;
-	}
+	abstract public function getData();
+	
 	/**
 	 * (non-PHPdoc)
 	 * @see Oxygen\FrameworkBundle\Form.FormInterface::createForm()
 	 */
 	public function createForm() {
-		$model = $this->getModel();
 		if (class_exists($this->getType())) {
 			$formType = $this->getType();
 			$formType = new $formType();
 		} else {
 			$formType = $this->getType();
 		}
-		$this->form = $this->formFactory->create($formType, $model, array('validation_groups' => array('default')))->handleRequest($this->request);
+		$this->form = $this->formFactory->create($formType, $this->getData(), array('validation_groups' => array('default')))->handleRequest($this->request);
 		return $this;
 	}
 	/**
@@ -112,36 +106,32 @@ abstract class Form implements FormInterface {
 	 * @see Oxygen\FrameworkBundle\Form.FormInterface::process()
 	 */
 	public function process() {
-		if ($this->onSubmit()) {
+		if ($this->form->isValid() && $this->onSubmit()) {
 			return $this->onSuccess();
 		}
 		return false;
 	}
-	
-	protected function updateCollection(array $elements, Collection $collection) {
-		// Removed
-		foreach($collection as $entity) {
+	/**
+	 * Return elements disapeared in the form collection
+	 * 
+	 * @param array $originals Original elements before submit
+	 * @param Collection $elements Elements after submit
+	 * @param bool $remove If true, remove the element from database
+	 * @return array
+	 */
+	protected function getRemovedElement(array $originals, Collection $elements) {
+		$entitiesRemoved = array();
+		foreach($originals as $entity) {
 			$removed = true;
-			foreach($elements as $model) {
-				if ($model === $entity) {
+			foreach($elements as $finalEntity) {
+				if ($entity === $finalEntity) {
 					$removed = false;
 					break;
 				}
 			}
 			if ($removed)
-				$collection->removeElement($entity);
+				$entitiesRemoved[] = $entity;
 		}
-		// Added
-		foreach($elements as $model) {
-			$added = true;
-			foreach($collection as $entity) {
-				if ($model === $entity) {
-					$added = false;
-					break;
-				}
-			}
-			if ($added)
-				$collection->add($entity);
-		}
+		return $entitiesRemoved;
 	}
 }

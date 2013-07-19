@@ -44,6 +44,7 @@ class LayoutTwigExtension extends \Twig_Extension {
 	public function getFunctions() {
 		return array(
 				'oxygen_layout'          => new \Twig_Function_Method($this, 'layout'),
+				'oxygen_uniqid'          => new \Twig_Function_Method($this, 'uniqid'),
 		);
 	}
 	/**
@@ -65,5 +66,8 @@ class LayoutTwigExtension extends \Twig_Extension {
 		throw new \Exception("Layout undefined in oxygen_framework configuration");
 	}
 	
+	public function uniqid($prefix = null, $more_entropy = null) {
+		return uniqid($prefix, $more_entropy);
+	}
 	
 }

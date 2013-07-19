@@ -49,16 +49,24 @@ abstract class OxygenConfiguration
     {
     	if (is_null($this->entitiesNode))
     		$this->initNodeEntities($rootNode);
-    	$entity_name = explode("\\", $entity_class);
-    	$entity_name = $this->camelCaseStringToUnderScores(array_pop($entity_name));
+    	$entity_parts = explode("\\", $entity_class);
+    	$entityClassName = array_pop($entity_parts);
+    	// Entity id
+    	$entity_id = $this->camelCaseStringToUnderScores($entityClassName);
+    	// Manager ?
+    	$manager_class = join('\\', $entity_parts) . '\Manager\\' . $entityClassName . 'Manager';
+    	if (!class_exists($manager_class)) {
+    		$manager_class = null;
+    	}
 		
     	$this->entitiesNode
     		->children()
-    			->arrayNode($entity_name)
+    			->arrayNode($entity_id)
     				->addDefaultsIfNotSet()
     				->children()
 			        	->scalarNode('class')->defaultValue($entity_class)->end()
 			        	->scalarNode('repository')->defaultValue($repository_class)->end()
+			        	->scalarNode('manager')->defaultValue($manager_class)->end()
 			        ->end()
 			    ->end()
 	        ->end();

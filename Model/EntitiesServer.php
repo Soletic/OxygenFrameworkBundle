@@ -58,8 +58,16 @@ class EntitiesServer {
 			}
 			$class = $this->container->getParameter($entity_parts[0] . '.entities.'.$entity_parts[1].'.class');
 			$repository = $this->container->getParameter($entity_parts[0] . '.entities.'.$entity_parts[1].'.repository');
-			$manager = new EntityManager($class, $repository);
+			$manager = $this->container->getParameter($entity_parts[0] . '.entities.'.$entity_parts[1].'.manager');
+			// Manager exist ?
+			if (!is_null($manager) && class_exists($manager)) {
+				$manager = new $manager($class, $repository);
+			} else {
+				$manager = new EntityManager($class, $repository);
+			}
 			$manager->load($this->entityManager);
+			$manager->setEventDispatcher($this->container->get('event_dispatcher'));
+			$manager->setId($entity_path);
 			$this->entitiesManager[$entity_path] = $manager;
 		}
 		return $this->entitiesManager[$entity_path];

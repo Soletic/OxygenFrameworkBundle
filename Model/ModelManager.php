@@ -1,6 +1,8 @@
 <?php
 namespace Oxygen\FrameworkBundle\Model;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 use Symfony\Component\Form\Form;
 
 /**
@@ -12,6 +14,10 @@ use Symfony\Component\Form\Form;
 abstract class ModelManager {
 	
 	protected $class;
+	/**
+	 * @var EventDispatcherInterface
+	 */
+	protected $dispatcher;
 	
 	public function __construct($class) {	
 		$this->class = $class;
@@ -24,6 +30,10 @@ abstract class ModelManager {
 	public function createInstance() {
 		$class = $this->class;
 		return new $class();
+	}
+	
+	public function setEventDispatcher(EventDispatcherInterface $dispatcher) {
+		$this->dispatcher = $dispatcher;
 	}
 	
 	private function getBundleNamespace($namespace) {
