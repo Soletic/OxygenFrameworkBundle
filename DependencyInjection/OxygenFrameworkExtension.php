@@ -27,6 +27,7 @@ class OxygenFrameworkExtension extends OxygenExtension
         $loader->load('services/templating.xml');
         $loader->load('services/model.xml');
         $loader->load('services/form.xml');
+        $loader->load('services/locale.xml');
         
     }
 }

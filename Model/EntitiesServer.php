@@ -37,6 +37,13 @@ class EntitiesServer {
 		$this->container = $container;
 	}
 	/**
+	 * @return DoctrineEntityManager
+	 */
+	public function getEntityManager() {
+		return $this->entityManager;
+	}
+	
+	/**
 	 * Return manager of an entity register has extensible
 	 * 
 	 * @param string $entity_path

@@ -33,7 +33,7 @@ class FormManager implements FormManagerInterface {
 	 * @param array $params
 	 * @return Form
 	 */
-	public function getForm($formId, array $params) {
+	public function getForm($formId, array $params = array()) {
 		if (empty($this->forms[$formId]))
 			throw new \Exception(sprintf("Form id %s doesn't exist", $formId));
 		

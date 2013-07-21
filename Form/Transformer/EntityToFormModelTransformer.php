@@ -50,6 +50,9 @@ class EntityToFormModelTransformer implements DataTransformerInterface {
 				$set = true;
 				if (is_null($getValue = $fromMethodGet->invoke($from))) {
 					$parameters = $toMethodsSet->getParameters();
+					if (count($parameters) <= 0) {
+						throw new \Exception(sprintf("Missing argument for method %s in %s", $toMethodsSet->name, $toReflection->name));
+					}
 					$setArgument = current($parameters);
 					$set = $setArgument->allowsNull();
 				}
@@ -93,7 +96,10 @@ class EntityToFormModelTransformer implements DataTransformerInterface {
 	 * @throws TransformationFailedException if object (issue) is not found.
 	 */
 	public function reverseTransform($model)
-	{
+	{	
+		if (!is_object($model))
+			return null;
+		
 		$entity = $model->getEntity();
 		// Can be null if it's data added by embedded collection form
 		if (is_null($entity)) {
