@@ -8,6 +8,8 @@
 
 namespace Oxygen\FrameworkBundle\Controller;
 
+use Oxygen\FrameworkBundle\Model\EntitiesServer;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -30,6 +32,13 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
  */
 class OxygenController extends ContainerAware
 {
+	/**
+	 * @return EntitiesServer
+	 */
+	public function getEntitiesServer() {
+		return $this->container->get('oxygen_framework.entities');
+	}
+	
     /**
      * Generates a URL from the given parameters.
      *
