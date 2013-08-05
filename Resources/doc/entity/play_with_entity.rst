@@ -31,9 +31,11 @@ Définitions
 Persister une entité consiste à déclarer auprès de Doctrine l'entité afin de créer la table associée dans la
 base de données. Ceci se fait en déclarant l'entité et ses attributs dans le dossier config/doctrine via un fichier *.orm.xml
 
+Créer une nouvelle entité
+-------------------------
 
 Créer le diagramme de classes d'une entité
-------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++
 
 Pour l'exemple, nous allons considérer l'entité Identity dans un bundle OxygenIdentityCard
 
@@ -45,7 +47,7 @@ Pour chaque entité, vous créez une interface et trois classes :
 * Une classe Repository dans le sous-dossier Repository
 
 Décrire pour doctrine l'entité
-------------------------------
+++++++++++++++++++++++++++++++
 
 Oxygen recommande d'utiliser le format XML pour décrire une entité auprès de Doctrine. Ce fichier XML se place dans le
 sous-dossier doctrine du dossier Ressources/config. Dans le cas de notre entité Identity, nous aurons :
@@ -73,7 +75,7 @@ Le paramètre pour la classe Repository doit respecter la forme suivante en minu
 [nom du bundle].entities.[nom de l'entité].repository
 
 Référencer l'entité au sein du bundle
--------------------------------------
++++++++++++++++++++++++++++++++++++++
 
 Pour référencer une entité vous devez compléter l'arbre de configuration du bundle :
 
@@ -134,22 +136,54 @@ Il est donc possible maintenant de faire :
    $entityManager = $this->container->get('oxygen_framework.entities')->getManager('oxygen_identity_card.identity')
 
 
+Mettre à jour la base de données
+++++++++++++++++++++++++++++++++
+
+Il existe plusieurs façons de mettre à jour la base de données : 
+
+* Soit en utilisant DoctrineMigrations
+* Soit en forçant la mise à jour de la structure
+
+Ici nous forçons la mise à jour de la structure :
+
+.. code-block:: bash
+   
+   cd /path/to/application
+   php app/console doctrine:schema:update --force
+
+Manipuler l'entité avec un manager
+----------------------------------
+
+Doctrine fournit ce que l'on appelle l'EntityManager. Ce service permet de gérer la persistence de l'ensemble des entités
+manipulés dans l'application.
+
+Oxygen fournit un manager permettant de réaliser les manipulations de base sur une entité :
+
+* création d'une instance
+* suppression
+* utilisation du repository 
+
+Une instance de manager existe pour chaque entité. Par défaut, le manager est celui fournit par OxygenFramework.
+
+Il ne se substitut pas à l'EntityManager de Doctrine mais offre une façon de manipuler une entité sans *jamais
+nommé la classe* tout en générant des évènements associés (création, suppression).
+
+Accéder au manager d'une entité
++++++++++++++++++++++++++++++++
+
+
+Créer une instance d'une entité
++++++++++++++++++++++++++++++++
+
+Rechercher des informations sur une entité (Repository)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 
 Evènements
 ----------
 
-
-
-OxygenFramework propose un mécanisme pour créer bundles basés sur des entités à persiter dans d'autres bundles.
-L'objectif est de permettre à d'autres développeurs de bénéficier des fonctionnalités du bundle tout en pouvant étendre
-les capacités des entités (ajout d'attributs, relations, repository associé, ...)
-
-Par exemple, dans un bundle OxygenContact, nous pouvons définir une entité Person ayant pour attribut le prénom et 
-le nom. L'ensemble du code de ce bundle utilise cette entité pour réaliser des formulaires, liste de personnes, ...
-
-Pour bénéficier des fonctionnalités offertes par le bundle, un développeur persiste l'entité Person dans un autre bundle
-de l'application (et y ajouter la date d'anniversaire s'il le souhaite par exemple)
 
 
 Manipuler l'entité avec le service oxygen_framework.entities
@@ -176,35 +210,4 @@ Un manager d'entité vous permet ensuite de retrouver le nom de la classe repré
       
       $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')->getClassName();
       $persons = $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')->getRepository()->findAll();
-
-Faciliter la persistence d'une entité
--------------------------------------
-
-Un développeur vous remerciera mille fois si vous lui fournissez un fichier *.orm.xml de base. Nous
-vous conseillons de créer son squelette dans le dossier config/entities de votre bundle. Par exemple :
-
-.. code-block:: xml
-
-   <?xml version="1.0" encoding="UTF-8"?>
-   <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                     http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-         <entity name="%oxygen_contact.entities.person.class%" table="%table%" repository-class="%oxygen_person.entities.person.repository%">
-            <id name="id" type="integer" column="id">
-                  <generator strategy="AUTO" />
-               </id>
-            <field name="firstName" type="string" length="100" nullable="false" />
-            <field name="lastName" type="string" length="100" nullable="false" />
-         </entity>
-   </doctrine-mapping>
-   
-Les attributs du tag <entity> sont codifiés :
-
-* name : nommage similaire à l'arbre de configuration de l'entité
-* repository : nommage similaire à l'arbre de configuration de l'entité
-* table : %table%
-
-En respectant cette pratique de nommage, votre bundle bénificiera du futur installateur automatisant 
-la persistence des entités surchargeables
 
