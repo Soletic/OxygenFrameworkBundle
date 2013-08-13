@@ -1,214 +1,86 @@
 Entités surchargeables
 ======================
 
-OxygenFramework propose un mécanisme pour créer bundles basés sur des entités à persiter dans d'autres bundles.
-L'objectif est de permettre à d'autres développeurs de bénéficier des fonctionnalités du bundle tout en pouvant étendre
-les capacités des entités (ajout d'attributs, relations, repository associé, ...)
+Dans la documentation :doc:`play_with_entity`, vous avez pu découvrir comment utiliser le framework d'Oxygen
+afin de manipuler les entités.
 
-Par exemple, dans un bundle OxygenContact, nous pouvons définir une entité Person ayant pour attribut le prénom et 
-le nom. L'ensemble du code de ce bundle utilise cette entité pour réaliser des formulaires, liste de personnes, ...
+En ayant respectant ces pratiques, vous pouvez aller plus loin pour faire en sorte que vos entités
+soit surchargeables par d'autres bundles. 
 
-Pour bénéficier des fonctionnalités offertes par le bundle, un développeur persiste l'entité Person dans un autre bundle
-de l'application (et y ajouter la date d'anniversaire s'il le souhaite par exemple)
-
-*Définition de "persister"*
-
-Persister une entité surchargeable consiste à déclarer auprès de Doctrine l'entité afin de créer la table associée dans la
-base de données. Ceci se fait en déclarant l'entité et ses attributs dans le dossier config/doctrine via un fichier *.orm.xml
-
-Créer le squelette d'entité surchargeable
------------------------------------------
-
-Pour l'exemple, nous allons considérer l'entité Person dans un bundle OxygenContact.
-
-Nous vous conseillons de créer dans votre bundle l'interface PersonInterface et la classe abstraite PersonModel l'implémentant.
-Puis vous créez une class Person dans le dossier Entity :
-
-.. code-block:: php
-
-   <?php
-   namespace Oxygen\ContactBundle\Entity
+.. 
+   Par exemple, dans un bundle OxygenIdentityCard, nous pouvons définir une entité Identity 
+   ayant pour attribut le nom. L'ensemble du code de ce bundle utilise cette entité pour réaliser des formulaires, 
+   liste de personnes, ...
    
-   class Person extend  Oxygen\ContactBundle\Model\PersonModel {}
+   Pour bénéficier des fonctionnalités offertes par le bundle, un développeur persiste l'entité Identity dans un autre bundle
+   de l'application (et y ajouter son surnom s'il le souhaite par exemple)
+  
+Créer et installer un fichier xml exemple pour l'entité
+-------------------------------------------------------
 
-Enfin, pensez à créer la classe Repository associée à l'entité Person
+Tout bundle Oxygen doit créer le fichier \*.orm.xml dans un dossier *entities* à la place de *doctrine* : Resources/config/entities.
+Ce fichier est ensuite copié par le développeur utilisant votre bundle dans un dossier Resources/config/doctrine permettant à
+Doctrine de la détecter et ainsi y associer une table dans la base de données.
 
-.. code-block:: php
-
-   <?php
-   namespace Oxygen\ContactBundle\Entity\Repository;
-
-   use Doctrine\ORM\EntityRepository;
-
-   class PersonRepository extends EntityRepository {}
-   
-Déclarer l'entité comment étant à persister
--------------------------------------------
-
-Vous devez ajouter à la configuration de votre bundle la possibilité de configurer l'entité, c'est à dire permettre dans le fichier 
-config.yml de changer la classe représentant l'entité et le repository : 
-
-.. code-block:: yaml
-
-   oxygen_contact
-      entities:
-         person:
-            class: ...
-            repository: ...
-
-Pour faire ceci facilement, deux étapes sont à suivre :
-
-* Ajouter à l'arbre de configuration du bundle la possibilité de changer les classes de base de l'entité
-* Lire l'arbre de configuration quand le bundle est chargé.
-
-Arbre de configuration
-++++++++++++++++++++++
-
-Modifier la classe Configuration du bundle en :
-
-* faisant hériter la classe DependencyInjection/Configuration par la classe OxygenConfiguration disponible dans le framework
-* ajoutant un appel à addEntityConfiguration()
-
-.. code-block:: php
-
-   ...
-   use Oxygen\FrameworkBundle\DependencyInjection\OxygenConfiguration;
-   
-   class Configuration extends OxygenConfiguration implements ConfigurationInterface
-   {
-       
-       public function getConfigTreeBuilder()
-       {
-           ...           
-           $this->addEntityConfiguration($rootNode, 'Oxygen\ContactBundle\Entity\Person', 'Oxygen\ContactBundle\Entity\Repository\PersonRepository');
-           ...
-       }
-   }
-
-Lecture de l'arbre de configuration
-+++++++++++++++++++++++++++++++++++
-
-Puis modifiez la classe DependencyInjection/OxygenContactBundle en :
-
-* faisant hériter de OxygenExtension
-* ajoutant un appel à mapEntitiesParameter()
-
-.. code-block:: php
-
-   ...
-   use Oxygen\FrameworkBundle\DependencyInjection\OxygenExtension;
-   
-   class OxygenPassbookExtension extends OxygenExtension
-   {
-      public function load(array $configs, ContainerBuilder $container) {
-         ...
-         $this->mapsEntitiesParameter($container, 'oxygen_contact', $config);
-         ...
-      }
-   }
-
-A partir de là, pour rendre opérationnel l'entité dans l'application, il faut la persister.
-
-Persister et étendre l'entité
------------------------------
-
-L'entité se persiste dans un autre bundle, par exemple YouOneBundle, en 
-
-* créant une classe dans le dossier Entity 
-* héritant de l'entité de base
-
-.. code-block:: php
-
-   <?php
-   namespace You\OneBundle\Entity
-   
-   class Person extend  Oxygen\ContactBundle\Entity\Person {}
-
-Puis créer le fichier Person.orm.xml dans le dossier config/doctrine :
+Ce fichier XML doit utiliser une annotation %mon_parametre% pour préciser la classe entité et Repository PHP associées
+et le nom de la table. Exemple :
 
 .. code-block:: xml
 
-   <!-- You\OneBundle\config\doctrine\person.orm.xml -->
+   <!-- @OxygenIdentityCardBundle\config\entities\Identity.orm.xml -->
    <?xml version="1.0" encoding="UTF-8"?>
    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                      http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-         <entity name="Oxygen\ContactBundle\Entity\Person" table="oxygen_contact_person" repository-class="%oxygen_person.entities.person.repository%">
+         <entity name="%oxygen_identity_card.entities.identity.class%" table="%oxygen_identity_card.entities.identity.table_name%" repository-class="%oxygen_identity_card.entities.identity.repository%">
             <id name="id" type="integer" column="id">
                   <generator strategy="AUTO" />
                </id>
-            <field name="firstName" type="string" length="100" nullable="false" />
-            <field name="lastName" type="string" length="100" nullable="false" />
+            <field name="name" type="string" nullable="false" />
          </entity>
    </doctrine-mapping>
    
-Enfin, indiquer la nouvelle dans le fichier de configuration
+Les %oxygen_identity_card.entities.identity.*% reprennent le même format que l'arbre de configuration des entités d'un bundle.
+
+Ensuite, pour persister l'entité, dans un autre bundle, vous devez :
+
+* Créer une classe PHP associée et se trouvant à la racine du dossier Entity (et héritant de celle de votre bundle)
+* Copier le fichier ORM précédent dans le dossier Resources/config/doctrine
+* Remplacer les %oxygen_identity_card.entities.identity.* par leurs valeurs (sauf pour repository-class ou ce n'est pas nécessaire).
+
+..
+   *Exemple*
+   Imaginons que vous avez créé un bundle You/SomethingBundle. Pour persister l'entité Identity d'un bundle Oxygen, vous : 
+   * devez créer une classe Identity dans le dossier Identity de votre bundle
+   * copiez le fichier Resources/entities/identity.orm.xml dans votre un dossier Resources/doctrine de votre bundle
+   * modifiez les %oxygen_identity_card.entities.identity.*% se trouvant dans ce fichier copié :
+      * %oxygen_identity_card.entities.identity.class% : You/SomethingBundle/Entity/Identity
+      * %oxygen_identity_card.entities.identity.table_name% : you_something_identity
+
+
+Ces manipulations sont rendues obligatoires par le fonctionnement même de Doctrine dans Symfony2 car :
+
+* Le fichier ORM d'une entité doit-être dans le même bundle que la classe PHP associée
+* La classe PHP associée doit-être à la racine dans le dossier Entity du bundle
+
+..
+   *A savoir*
+   En respectant cette notation, les entités de votre bundle pourront être traitées par le futur installateur automatique des
+   entités.
+
+Configurer la classe PHP associée à l'entité
+--------------------------------------------
+
+Dans le fichier de configuration de l'application, vous devez préciser la classe PHP utilisée pour chaque entité persistée.
+
+Dans notre exemple nous aurons : 
 
 .. code-block:: yaml
 
-   oxygen_contact
+   oxygen_identity_card:
       entities:
-         person:
-            class: You\OneBundle\Entity\Person
-            repository: You\OneBundle\Entity\Repository\PersonRepository # Not required
-   
-Vous pouvez ainsi ajoutez des méthodes et attributs à votre entité Person (en pensant à les ajouter aussi dans le fichier Person.orm.xml)
+         identity:
+            class: You\SomethingBundle\Entity\Identity
 
-
-Manipuler l'entité avec le service oxygen_framework.entities
-------------------------------------------------------------
-
-Le but est d'ensuite de manipuler l'entité (créer un instance, faire une recherche) sans jamais utiliser directement le nom de la classe
-de façon à ce que si l'entité est surchargé via une autre classe alors le code de votre bundle continue de fonctionner quelque soit
-l'application où il est intégré.
-
-Pour cela nous utilisons le service oxygen_framework.entities permettant d'accéder à un manager d'une entité :
-
-.. code-block:: php
-      
-      $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')
-
-*oxygen_contact.person* est un alias créé automatiquement par le framework et se compose deux parties :
-
-* oxygen_contact : le nom racine de la configuration du bundle
-* person : le nom de l'entité en minuscule
-
-Un manager d'entité vous permet ensuite de retrouver le nom de la classe représentant l'entité et d'accéder au Repository :
-
-.. code-block:: php
-      
-      $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')->getClassName();
-      $persons = $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')->getRepository()->findAll();
-
-Faciliter la persistence d'une entité
--------------------------------------
-
-Un développeur vous remerciera mille fois si vous lui fournissez un fichier *.orm.xml de base. Nous
-vous conseillons de créer son squelette dans le dossier config/entities de votre bundle. Par exemple :
-
-.. code-block:: xml
-
-   <?xml version="1.0" encoding="UTF-8"?>
-   <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                     http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-         <entity name="%oxygen_contact.entities.person.class%" table="%table%" repository-class="%oxygen_person.entities.person.repository%">
-            <id name="id" type="integer" column="id">
-                  <generator strategy="AUTO" />
-               </id>
-            <field name="firstName" type="string" length="100" nullable="false" />
-            <field name="lastName" type="string" length="100" nullable="false" />
-         </entity>
-   </doctrine-mapping>
-   
-Les attributs du tag <entity> sont codifiés :
-
-* name : nommage similaire à l'arbre de configuration de l'entité
-* repository : nommage similaire à l'arbre de configuration de l'entité
-* table : %table%
-
-En respectant cette pratique de nommage, votre bundle bénificiera du futur installateur automatisant 
-la persistence des entités surchargeables
 

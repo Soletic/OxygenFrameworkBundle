@@ -52,11 +52,9 @@ Décrire pour doctrine l'entité
 Oxygen recommande d'utiliser le format XML pour décrire une entité auprès de Doctrine. Ce fichier XML se place dans le
 sous-dossier doctrine du dossier Ressources/config. Dans le cas de notre entité Identity, nous aurons :
 
-Puis créer le fichier Person.orm.xml dans le dossier config/doctrine :
-
 .. code-block:: xml
 
-   <!-- @OxygenIdentityCardBundle\config\doctrine\person.orm.xml -->
+   <!-- @OxygenIdentityCardBundle\config\doctrine\Identity.orm.xml -->
    <?xml version="1.0" encoding="UTF-8"?>
    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -73,6 +71,8 @@ Puis créer le fichier Person.orm.xml dans le dossier config/doctrine :
 Le paramètre pour la classe Repository doit respecter la forme suivante en minuscule séparé par des underscore :
 
 [nom du bundle].entities.[nom de l'entité].repository
+
+.. _reference_entity:
 
 Référencer l'entité au sein du bundle
 +++++++++++++++++++++++++++++++++++++
@@ -151,6 +151,7 @@ Ici nous forçons la mise à jour de la structure :
    cd /path/to/application
    php app/console doctrine:schema:update --force
 
+
 Manipuler l'entité avec un manager
 ----------------------------------
 
@@ -171,43 +172,102 @@ nommé la classe* tout en générant des évènements associés (création, supp
 Accéder au manager d'une entité
 +++++++++++++++++++++++++++++++
 
+L'accès au manager d'une entité se fait grâce au service %oxygen_framework.entities% :
+
+.. code-block:: php
+
+   $entityManager = $this->container->get('oxygen_framework.entities')->getManager('oxygen_identity_card.identity');
+   
+La méthode getManager prend en argument l'identifiant de l'entité. Cet identifiant est créé automatiquement lorsque l'on
+référence l'entité : :ref:`reference_entity`
 
 Créer une instance d'une entité
 +++++++++++++++++++++++++++++++
 
+Pour créer une nouvelle instance, le manager propose la méthode createInstance :
+
+.. code-block:: php
+
+   $entityManager = $this->container->get('oxygen_framework.entities')->getManager('oxygen_identity_card.identity');
+   $identity = $entityManager->createInstance();
+   
+La création d'une nouvelle instance via le manager déclenche un évènement d'entité. Lire la section sur les évènements : :ref:`_event_entity`
+
+..
+
+   Pour profiter complètement du système d'évènement, nous vous invitons donc à toujours utiliser le manager pour créer
+   ou supprimer une entité.
+
 Rechercher des informations sur une entité (Repository)
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+Le Repository de chaque entité est accessible via la méthode getRepository() du manager :
+
+.. code-block:: php
+
+   $entityManager = $this->container->get('oxygen_framework.entities')->getManager('oxygen_identity_card.identity');
+   $identityRepository = $entityManager->getRepository();
+   $allIdentities = $identityRepository->findAll();
 
 
+.. _event_entity:
 
 Evènements
 ----------
 
+Pour chaque manipulation d'une entité via le manager, un évènement est lancé permettant de l'attraper afin de compléter le traitement.
+Par exemple dans le cas d'une suppression, nous pouvons vérifier si nous avons le droit de la supprimer.
 
+..
 
-Manipuler l'entité avec le service oxygen_framework.entities
-------------------------------------------------------------
+   Doctrine propose déjà des évènements comme prePersist, preRemove, ... que l'on peut attraper en créant un service
+   les écoutant. Cependant ces services seront TOUS déclenchés puis il faut contrôler la nature de l'entité afin de déterminer
+   si nous faisons un traitement ou pas. Les performances ne sont donc pas optimales.
+   
+   C'est pour cela qu'Oxygen, via le manager, permet de cibler les évènements pour chacune des entités.
+   
+Dans Symfony2, pour attraper des évènements, il faut créer un service implémentant l'interface EventSubscriberInterface, obligeant à
+implémenter la méthode statique getSubscribedEvents(). Cette méthode renvoie un tableau dont la clé est l'identiant de l'évènement et
+la valeur la méthode associée. (:doc:`Souscripteur d'évènement dans Symfony2 <http://symfony.com/fr/doc/current/components/event_dispatcher/introduction.html#utiliser-les-souscripteurs-d-evenement>`)
 
-Le but est d'ensuite de manipuler l'entité (créer un instance, faire une recherche) sans jamais utiliser directement le nom de la classe
-de façon à ce que si l'entité est surchargé via une autre classe alors le code de votre bundle continue de fonctionner quelque soit
-l'application où il est intégré.
+OxygenFramework proposer une classe EntityEvents constituée de 3 méthodes statiques retournant un identifiant unique d'évènement pour 
+chaque entité :
 
-Pour cela nous utilisons le service oxygen_framework.entities permettant d'accéder à un manager d'une entité :
+* beforeRemove($entityId) : évènement avant suppression d'une entité ayant pour id $entityId
+* afterRemove($entityId) : évènement après suppression d'une entité ayant pour id $entityId
+* created($entityId) : évènement après création d'une entité ayant pour id $entityId
+
+Pour les évènements de mise à jour, il est trop complexe de surcharger aujourd'hui Doctrine permettant d'offrir ce genre d'évènement.
+
+Par exemple, si nous souhaitons écouter la suppression d'une entité, ici oxygen_identity_card.identity, nous créons la classe
+du service :
 
 .. code-block:: php
+
+   <?php
+   use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+   use Oxygen\FrameworkBundle\Model\Event\ModelEvent;
+   
+   class EventsEventListener implements EventSubscriberInterface {
+   
+      public static function getSubscribedEvents() {
+         return array(
+               EntityEvents::beforeRemove('oxygen_identity_card.identity') => 'onRemove',
+            );
+      }
       
-      $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')
+      public function onRemoveEventProduct(ModelEvent $event) {
+         $entity = $event->getModel();
+         ...
+      }
+   
+   }
+   
+Puis nous déclarons le service :
 
-*oxygen_contact.person* est un alias créé automatiquement par le framework et se compose deux parties :
+.. code-block:: xml
 
-* oxygen_contact : le nom racine de la configuration du bundle
-* person : le nom de l'entité en minuscule
-
-Un manager d'entité vous permet ensuite de retrouver le nom de la classe représentant l'entité et d'accéder au Repository :
-
-.. code-block:: php
-      
-      $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')->getClassName();
-      $persons = $this->get('oxygen_framework.entities')->getManager('oxygen_contact.person')->getRepository()->findAll();
+   <service id="oxygen_identity_card.identity_listener" class="Oxygen\IdentityCardBundle\EventListener\Entity\IdentityListener">
+      <tag name="kernel.event_subscriber" />
+   </service>
 
