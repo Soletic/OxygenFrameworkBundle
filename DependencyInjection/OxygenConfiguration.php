@@ -49,6 +49,7 @@ abstract class OxygenConfiguration implements ConfigurationInterface
     {
     	if (is_null($this->entitiesNode))
     		$this->initNodeEntities($rootNode);
+    	
     	$entity_parts = explode("\\", $entity_class);
     	$entityClassName = array_pop($entity_parts);
     	// Entity id
@@ -58,6 +59,9 @@ abstract class OxygenConfiguration implements ConfigurationInterface
     	if (!class_exists($manager_class)) {
     		$manager_class = null;
     	}
+    	// Table name
+    	array_pop($entity_parts);
+    	$tableName = preg_replace('/_bundle/', '', $this->camelCaseStringToUnderScores(join('', $entity_parts))) .'_'. $entity_id;
 		
     	$this->entitiesNode
     		->children()
@@ -67,6 +71,7 @@ abstract class OxygenConfiguration implements ConfigurationInterface
 			        	->scalarNode('class')->defaultValue($entity_class)->end()
 			        	->scalarNode('repository')->defaultValue($repository_class)->end()
 			        	->scalarNode('manager')->defaultValue($manager_class)->end()
+			        	->scalarNode('table_name')->defaultValue($tableName)->end()
 			        ->end()
 			    ->end()
 	        ->end();
