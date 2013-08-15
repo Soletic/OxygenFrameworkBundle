@@ -19,6 +19,7 @@ class FormCompilerPass implements CompilerPassInterface
 {
 	public function process(ContainerBuilder $container)
 	{
+		
 		$pool = $container->getDefinition('oxygen_framework.form');
 		
 		$formsService = array();
@@ -27,7 +28,7 @@ class FormCompilerPass implements CompilerPassInterface
 		$forms = $container->findTaggedServiceIds('oxygen.form');
 		
 		// Forms
-		$attributesRequired = array('formType', 'dataClass');
+		$attributesRequired = array('id');
 		foreach ($forms as $id => $tagAttributes) {
 			if (count($tagAttributes) > 1)
 				throw new \Exception("Too much tag oxygen.form on service " . $id);
@@ -40,13 +41,14 @@ class FormCompilerPass implements CompilerPassInterface
 					throw new \Exception(sprintf("Attribute %s required for tag oxygen.form in service %s", $attribute, $id));
 			}
 			
-			$definition = $container->getDefinition($id)
-				->addArgument(new Reference('request'))
-				->addArgument($attributes['formType'])
-				->addArgument($attributes['dataClass'])
+			$definition = $container->getDefinition($id)->addArgument(new Reference('request'))
 				->addMethodCall('setFormFactory', array(new Reference('form.factory')))
 				->addMethodCall('setContainer', array(new Reference('service_container')))
 				->setScope('request');
+			if (!empty($attributes['formType']))
+				$definition->addArgument($attributes['formType']);
+			if (!empty($attributes['dataClass']))
+				$definition->addArgument($attributes['dataClass']);
 			
 			$formsService[$attributes['id']] = $id;
 		}

@@ -1,8 +1,5 @@
-Démarrer rapidement
-===================
-
-Créer un controller Oxygen
---------------------------
+Controller Oxygen
+=================
 
 Par défaut Symfony2 fournit une classe *Controller* offrant des raccourcis au container de services à un certains services permettant
 de générer une vue. Cependant, Symfony2 ne recommande pas son utilisation sauf dans le cas d'une découverte du Framework.
@@ -11,6 +8,7 @@ Le framework Oxygen propose une classe *OxygenController* reprenant en grande pa
 plus des accès rapides à des fonctionnalités du framework.
 
 Pour tous vos controllers, vous devez donc avoir au minimum la déclaration suivante :
+
 .. code-block:: php
 
    namespace You\SomethingBundle\Controller;
@@ -24,6 +22,4 @@ Pour tous vos controllers, vous devez donc avoir au minimum la déclaration suiv
            return $this->render('YouSomethingBundle:Default:index.html.twig', array('name' => $name));
        }
    }
-   
-Routes et services
-------------------
+

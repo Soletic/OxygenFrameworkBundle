@@ -45,7 +45,7 @@ abstract class OxygenConfiguration implements ConfigurationInterface
 	 * @param string $entity_class The full path of the entity class
 	 * @param string $repository_class The full path of the repository class
 	 */
-    public function addEntityConfiguration($rootNode, $entity_class, $repository_class)
+    public function addEntityConfiguration($rootNode, $entity_class)
     {
     	if (is_null($this->entitiesNode))
     		$this->initNodeEntities($rootNode);
@@ -54,6 +54,11 @@ abstract class OxygenConfiguration implements ConfigurationInterface
     	$entityClassName = array_pop($entity_parts);
     	// Entity id
     	$entity_id = $this->camelCaseStringToUnderScores($entityClassName);
+    	// Repository ?
+    	$repository_class = join('\\', $entity_parts) . '\Repository\\' . $entityClassName . 'Repository';
+    	if (!class_exists($repository_class)) {
+    		$repository_class = 'Doctrine\ORM\EntityRepository';
+    	}
     	// Manager ?
     	$manager_class = join('\\', $entity_parts) . '\Manager\\' . $entityClassName . 'Manager';
     	if (!class_exists($manager_class)) {

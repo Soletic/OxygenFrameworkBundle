@@ -46,7 +46,7 @@ abstract class Form implements FormInterface {
 	 * 
 	 * @param Request $request
 	 */
-	public function __construct(Request $request, $formType, $dataClass) {
+	public function __construct(Request $request, $formType = null, $dataClass = null) {
 		$this->request = $request;
 		$this->formType = $formType;
 		$this->dataClass = $dataClass;
@@ -83,19 +83,31 @@ abstract class Form implements FormInterface {
 	 * @see Oxygen\FrameworkBundle\Form.FormInterface::getModel()
 	 */
 	abstract public function getData();
+	/**
+	 * Return the normalized model data
+	 * 
+	 * @return mixed
+	 */
+	public function getModel() {
+		return $this->form->getNormData();
+	}
 	
 	/**
 	 * (non-PHPdoc)
 	 * @see Oxygen\FrameworkBundle\Form.FormInterface::createForm()
 	 */
 	public function createForm() {
-		if (class_exists($this->getType())) {
-			$formType = $this->getType();
-			$formType = new $formType();
+		if (is_null($this->getType())) {
+			throw new \Exception('Not implemented');
 		} else {
-			$formType = $this->getType();
+			if (class_exists($this->getType())) {
+				$formType = $this->getType();
+				$formType = new $formType();
+			} else {
+				$formType = $this->getType();
+			}
+			$this->form = $this->formFactory->create($formType, $this->getData(), $this->options)->handleRequest($this->request);
 		}
-		$this->form = $this->formFactory->create($formType, $this->getData(), $this->options)->handleRequest($this->request);
 		return $this;
 	}
 	/**

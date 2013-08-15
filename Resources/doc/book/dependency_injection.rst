@@ -8,7 +8,7 @@ Oxygen a créé deux classes abstraites pour faciliter l'injection de dépendanc
 
 Si vous n'êtes pas familié avec l'injection de dépendance, nous vous invitons à lire :
 
-:doc:`http://symfony.com/fr/doc/current/cookbook/bundles/extension.html`
+`Symfony Injection de dépendance <http://symfony.com/fr/doc/current/cookbook/bundles/extension.html>`_
 
 Configuration du bundle
 -----------------------
@@ -20,7 +20,7 @@ Remplacer cette implémentation par l'héritage de la classe abstraite OxygenCon
 de méthodes vous simplifiant :
 
 * La création de l'arbre de configuration du bundle
-* La déclaration des entités (voir section :doc:`../entity/play_with_entity`)
+* La déclaration des entités (voir section :doc:`entity`)
 
 Chargement des extensions du bundle
 -----------------------------------
