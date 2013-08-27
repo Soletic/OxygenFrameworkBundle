@@ -21,7 +21,7 @@ vues utilisées par vos controllers en héritent.
 Imaginez maintenant que vous faites une dizaine de vues dans votre bundle.
 
 Si un développeur souhaite intégrer votre bundle dans une application, il surcharge YouSomethingBundle::layout.html.twig
-(voir :doc:`http://symfony.com/fr/doc/current/book/templating.html#overriding-bundle-templates`). Cependant, ce développeur 
+(voir `Surcharge de vues dans Symfony2 <http://symfony.com/fr/doc/current/book/templating.html#overriding-bundle-templates>`_). Cependant, ce développeur 
 peut souhaiter intégrer certaines vues de votre bundle dans un layout allégé (dans le cas d'un appel ajax par exemple),
 alors que pour d'autres, le layout complet est parfait.
 
@@ -48,3 +48,6 @@ Puis dans le fichier de configuration de l'application vous fixez le layout à u
             light: 'UnBundle::layout-light.html.twig'
 
 Le layout light n'est pas obligatoire. Dans ce cas, OxygenFramework utilisera toujours le complet (full)
+
+Le layout light est utilisé automatiquement par OxygenFramework lorsqu'il détecte que la request est Ajax.
+

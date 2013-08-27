@@ -1,6 +1,10 @@
 <?php
 namespace Oxygen\FrameworkBundle\Form;
 
+use Symfony\Component\Form\FormFactoryInterface;
+
+use Symfony\Component\Form\FormBuilder;
+
 use Doctrine\Common\Collections\Collection;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +35,12 @@ abstract class Form implements FormInterface {
 		);
 	
 	protected $container = null;
+	/**
+	 * Form builder of the form
+	 * 
+	 * @var FormBuilder
+	 */
+	private $formBuilder;
 	
 	/**
 	 * @var SymfonyForm
@@ -50,13 +60,41 @@ abstract class Form implements FormInterface {
 		$this->request = $request;
 		$this->formType = $formType;
 		$this->dataClass = $dataClass;
+		
+		if (!is_null($formType)) {
+			
+		}
 	}
-	public function setFormFactory($factory) {
+	/**
+	 * 
+	 * @param FormFactoryInterface $factory
+	 */
+	public function setFormFactory(FormFactoryInterface $factory) {
+		if (is_null($this->formFactory)) {
+			// Create form builder when form factory is set
+			if (is_null($this->formType )) {
+				$formType = 'form';
+			} elseif (class_exists($this->formType)) {
+				$formType = $this->getType();
+				$formType = new $formType();
+			} else {
+				$formType = $this->getType();
+			}
+			$this->formBuilder = $factory->createBuilder($formType, null, $this->options);
+		}
 		$this->formFactory = $factory;
+		
 	}
 	public function setContainer($container) {
 		$this->container = $container;
 	}
+	/**
+	 * @return FormBuilder
+	 */
+	public function getFormBuilder() {
+		return $this->formBuilder;
+	}
+	
 	/**
 	 * (non-PHPdoc)
 	 * @see Oxygen\FrameworkBundle\Form.FormInterface::getType()
@@ -82,7 +120,9 @@ abstract class Form implements FormInterface {
 	 * (non-PHPdoc)
 	 * @see Oxygen\FrameworkBundle\Form.FormInterface::getModel()
 	 */
-	abstract public function getData();
+	public function getData() {
+		
+	}
 	/**
 	 * Return the normalized model data
 	 * 
@@ -97,17 +137,7 @@ abstract class Form implements FormInterface {
 	 * @see Oxygen\FrameworkBundle\Form.FormInterface::createForm()
 	 */
 	public function createForm() {
-		if (is_null($this->getType())) {
-			throw new \Exception('Not implemented');
-		} else {
-			if (class_exists($this->getType())) {
-				$formType = $this->getType();
-				$formType = new $formType();
-			} else {
-				$formType = $this->getType();
-			}
-			$this->form = $this->formFactory->create($formType, $this->getData(), $this->options)->handleRequest($this->request);
-		}
+		$this->form = $this->formBuilder->setData($this->getData())->getForm()->handleRequest($this->request);
 		return $this;
 	}
 	/**

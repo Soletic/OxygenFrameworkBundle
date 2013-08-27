@@ -8,6 +8,7 @@ les recommandations d’Oxygen afin qu’ils puissent être interconnectables, p
    :maxdepth: 2
    :glob:
     
+   installation
    book/*
    cookbook/index
    set_application_layout
