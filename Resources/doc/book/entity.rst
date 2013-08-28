@@ -32,7 +32,7 @@ Définitions
 *Persister*
 
 Persister une entité consiste à déclarer auprès de Doctrine l'entité afin de créer la table associée dans la
-base de données. Ceci se fait en déclarant l'entité et ses attributs dans le dossier config/doctrine via un fichier *.orm.xml
+base de données. Ceci se fait en déclarant l'entité et ses attributs dans le dossier config/doctrine via un fichier \*.orm.xml
 
 Créer une nouvelle entité
 -------------------------
@@ -76,7 +76,6 @@ Le paramètre pour la classe Repository doit respecter la forme suivante en minu
 [nom du bundle].entities.[nom de l'entité].repository
 
 .. _reference_entity:
-
 Référencer l'entité au sein du bundle
 +++++++++++++++++++++++++++++++++++++
 
@@ -215,7 +214,7 @@ Le Repository de chaque entité est accessible via la méthode getRepository() d
 Entités surchargeables
 ----------------------
 
-Dans la documentation :doc:`play_with_entity`, vous avez pu découvrir comment utiliser le framework d'Oxygen
+Dans la section :ref:`_reference_entity`, vous avez pu découvrir comment utiliser le framework d'Oxygen
 afin de manipuler les entités.
 
 En ayant respectant ces pratiques, vous pouvez aller plus loin pour faire en sorte que vos entités
@@ -301,7 +300,6 @@ Dans notre exemple nous aurons :
 
 
 .. _event_entity:
-
 Evènements
 ----------
 
@@ -318,7 +316,7 @@ Par exemple dans le cas d'une suppression, nous pouvons vérifier si nous avons 
    
 Dans Symfony2, pour attraper des évènements, il faut créer un service implémentant l'interface EventSubscriberInterface, obligeant à
 implémenter la méthode statique getSubscribedEvents(). Cette méthode renvoie un tableau dont la clé est l'identiant de l'évènement et
-la valeur la méthode associée. (:doc:`Souscripteur d'évènement dans Symfony2 <http://symfony.com/fr/doc/current/components/event_dispatcher/introduction.html#utiliser-les-souscripteurs-d-evenement>`)
+la valeur la méthode associée. (`Souscripteur d'évènement dans Symfony2 <http://symfony.com/fr/doc/current/components/event_dispatcher/introduction.html#utiliser-les-souscripteurs-d-evenement>`_)
 
 OxygenFramework proposer une classe EntityEvents constituée de 3 méthodes statiques retournant un identifiant unique d'évènement pour 
 chaque entité :
