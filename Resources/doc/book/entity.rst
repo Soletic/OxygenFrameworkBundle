@@ -76,6 +76,7 @@ Le paramètre pour la classe Repository doit respecter la forme suivante en minu
 [nom du bundle].entities.[nom de l'entité].repository
 
 .. _reference_entity:
+
 Référencer l'entité au sein du bundle
 +++++++++++++++++++++++++++++++++++++
 
@@ -193,7 +194,7 @@ Pour créer une nouvelle instance, le manager propose la méthode createInstance
    $entityManager = $this->container->get('oxygen_framework.entities')->getManager('oxygen_identity_card.identity');
    $identity = $entityManager->createInstance();
    
-La création d'une nouvelle instance via le manager déclenche un évènement d'entité. Lire la section sur les évènements : :ref:`_event_entity`
+La création d'une nouvelle instance via le manager déclenche un évènement d'entité. Lire la section sur les évènements : :ref:`event_entity`
 
 ..
 
@@ -214,7 +215,7 @@ Le Repository de chaque entité est accessible via la méthode getRepository() d
 Entités surchargeables
 ----------------------
 
-Dans la section :ref:`_reference_entity`, vous avez pu découvrir comment utiliser le framework d'Oxygen
+Dans la section :ref:`reference_entity`, vous avez pu découvrir comment utiliser le framework d'Oxygen
 afin de manipuler les entités.
 
 En ayant respectant ces pratiques, vous pouvez aller plus loin pour faire en sorte que vos entités
@@ -300,6 +301,7 @@ Dans notre exemple nous aurons :
 
 
 .. _event_entity:
+
 Evènements
 ----------
 
