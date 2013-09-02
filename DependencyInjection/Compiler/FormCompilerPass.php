@@ -47,6 +47,8 @@ class FormCompilerPass implements CompilerPassInterface
 				->setScope('request');
 			if (!empty($attributes['formType']))
 				$definition->addArgument($attributes['formType']);
+			else
+				$definition->addArgument(null);
 			if (!empty($attributes['dataClass']))
 				$definition->addArgument($attributes['dataClass']);
 			

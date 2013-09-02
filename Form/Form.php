@@ -30,9 +30,7 @@ abstract class Form implements FormInterface {
 	protected $params = array();
 	protected $request = null;
 	
-	protected $options = array(
-			'validation_groups' => array('default'),
-		);
+	protected $options = array();
 	
 	protected $container = null;
 	/**
@@ -80,6 +78,10 @@ abstract class Form implements FormInterface {
 			} else {
 				$formType = $this->getType();
 			}
+			// Data class
+			if (!is_null($this->dataClass))
+				$this->options['data_class'] = $this->dataClass;
+			// Building
 			$this->formBuilder = $factory->createBuilder($formType, null, $this->options);
 		}
 		$this->formFactory = $factory;
