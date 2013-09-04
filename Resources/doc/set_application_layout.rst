@@ -11,7 +11,7 @@ Lors de la création de vues dans votre bundle, vous étendez généralement un 
 Par exemple dans un bundle YouSomethingBundle, vous créez une vue YouSomethingBundle::layout.html.twig et toutes les
 vues utilisées par vos controllers en héritent.
 
-.. code-block:: twig
+.. code-block:: jinja
 
    {# YouSomethingBundle:Something:index.html.twig #}
    {% extends 'YouSomethingBundle::layout.html.twig' %}
@@ -29,7 +29,7 @@ OxygenFramework vous permet de contourner cette limitation pour créer des bundl
 
 Pour cela, il suffit d'étendre vos vues avec la fonction twig oxygen_layout()
 
-.. code-block:: twig
+.. code-block:: jinja
 
    {# YouSomethingBundle:Something:index.html.twig #}
    {% extends oxygen_layout() %}

@@ -130,7 +130,7 @@ Utilisons le formulaire dans une controller :
    
 La vue du formulaire :
 
-.. code-block:: twig
+.. code-block:: jinja
 
    <div>
       <form method="post" {{ form_enctype(form) }}>

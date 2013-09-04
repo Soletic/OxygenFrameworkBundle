@@ -37,7 +37,8 @@ facilitant :
 Exemple si votre bundle a comme arbre de configuration : 
 
 .. code-block:: yaml
-
+   :linenos:
+   
    you_something:
       templating:
          layouts:
@@ -48,7 +49,8 @@ En héritant de la classe OxygenExtension au lieu de celle fournie par défaut d
 (Symfony\Component\HttpKernel\DependencyInjection\Extension), vous disposez de la méthode mapsParameter. Exemple :
 
 .. code-block:: php
-
+   :linenos:
+   
    <?php
    namespace You\SometingBundle\DependencyInjection;
    
@@ -75,7 +77,8 @@ Le deuxième argument de la fonction est le préfixe de chaque élément rencont
 Les paramètres globaux suivant seront créés :
 
 .. code-block:: yaml
-
+   :linenos:
+   
    you_something.templating.layouts.full: '::base.html.twig'
    you_something.something: [1,2]
    
