@@ -231,6 +231,18 @@ class OxygenController extends ContainerAware
         return $this->container->get($id);
     }
 
+    /**
+     * Creates and returns a form builder instance
+     *
+     * @param mixed $data    The initial data for the form
+     * @param array $options Options for the form
+     *
+     * @return FormBuilder
+     */
+    public function createFormBuilder($data = null, array $options = array())
+    {
+    	return $this->container->get('form.factory')->createBuilder('form', $data, $options);
+    }
 
     /**
      * Creates and returns a Form instance from the type of the form.
@@ -248,7 +260,7 @@ class OxygenController extends ContainerAware
     
     /**
      * Translate a string
-     * 
+     *
      * @param string $message
      * @param array $params
      * @param string $domain
